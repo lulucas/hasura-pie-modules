@@ -33,6 +33,9 @@ func (m *redis) BeforeCreated(bc pie.BeforeCreatedContext) {
 	})
 }
 
+func (m *redis) Created(cc pie.CreatedContext) {
+}
+
 func New() *redis {
 	return &redis{}
 }

@@ -15,7 +15,7 @@ func notify(cc pie.CreatedContext, channels map[string]channel.Channel) echo.Han
 	db := cc.Get("db").(*pg.DB)
 
 	return func(c echo.Context) error {
-		channelIdStr := c.Param("channelId")
+		channelIdStr := c.Param("id")
 		channelId, err := strconv.Atoi(channelIdStr)
 		if err != nil {
 			return err
@@ -41,23 +41,20 @@ func notify(cc pie.CreatedContext, channels map[string]channel.Channel) echo.Han
 			return err
 		}
 
-		cc.Logger().Infof("Notify payChannel id: %d, name: %s", payChannel.Id, payChannel.Platform)
+		cc.Logger().Infof("Notify pay channel id: %d, name: %s", payChannel.Id, payChannel.Platform)
 
-		// 获取支付通道
 		ch, ok := channels[payChannel.Platform]
 		if !ok {
-			cc.Logger().Errorf("Notify payChannel id: %s not found", channelId)
-			return c.String(http.StatusBadRequest, "payChannel not found")
+			cc.Logger().Errorf("Notify pay channel id: %s not found", channelId)
+			return c.String(http.StatusBadRequest, "pay channel not found")
 		}
 
-		// 进行支付通知
 		notification, err := ch.Notify(c, payChannel.Params)
 		if err != nil {
 			cc.Logger().Errorf("Notify validation error: %s", err.Error())
 			return err
 		}
 
-		// 插入支付数据
 		payLog := model.PayLog{
 			PayChannelId:   int32(channelId),
 			UserId:         userId,

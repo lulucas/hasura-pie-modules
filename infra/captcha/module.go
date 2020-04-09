@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	ErrorSendSmsCaptchaTooQuick = errors.New("短信发送过于频繁")
-	ErrorImageCaptchaInvalid    = errors.New("图形验证码错误")
+	ErrorSendSmsCaptchaTooQuick = errors.New("captcha.sms.send-too-quick")
+	ErrorImageCaptchaInvalid    = errors.New("captcha.image.captcha-invalid")
 )
 
 type captcha struct {
@@ -33,9 +33,7 @@ func (m *captcha) Created(cc pie.CreatedContext) {
 	m.r = cc.Get("redis").(*redis.Client)
 	m.logger = cc.Logger()
 
-	// 发送短信验证码
 	cc.HandleAction("send_sms_captcha", sendSmsCaptcha(cc))
-	// 创建图形验证码
 	cc.HandleAction("create_image_captcha", createImageCaptcha(cc))
 }
 

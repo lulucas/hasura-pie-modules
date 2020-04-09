@@ -11,7 +11,6 @@ import (
 )
 
 const (
-	// 验证码有效时间
 	ImageCaptchaTTL = 5 * time.Minute
 )
 
@@ -37,7 +36,6 @@ func createImageCaptcha(cc pie.CreatedContext) interface{} {
 	}
 }
 
-// 验证图形验证码
 func (m *captcha) ValidateImageCaptcha(id, captcha string) (err error) {
 	origin, err := m.r.Get(fmt.Sprintf("captcha:image:%s", id)).Result()
 	if err != nil {
@@ -48,7 +46,6 @@ func (m *captcha) ValidateImageCaptcha(id, captcha string) (err error) {
 	}
 
 	defer func() {
-		// 不论是否验证成功都删除验证码
 		if redisErr := m.r.Del(fmt.Sprintf("captcha:image:%s", id)).Err(); redisErr != nil {
 			err = redisErr
 		}

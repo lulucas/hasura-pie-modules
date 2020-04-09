@@ -16,7 +16,6 @@ type pay struct {
 }
 
 func New() *pay {
-	// 初始化支持的通道
 	channels := map[string]channel.Channel{
 		"bf": bf.New(),
 	}
@@ -37,7 +36,6 @@ func (m *pay) BeforeCreated(bc pie.BeforeCreatedContext) {
 func (m *pay) Created(cc pie.CreatedContext) {
 	m.db = cc.Get("db").(*pg.DB)
 
-	// 回调
 	cc.Http().POST("/pay/notify/:id/:uid", notify(cc, m.channels))
 }
 
