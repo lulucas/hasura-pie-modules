@@ -27,7 +27,6 @@ func createDefaultAdmin(ctx pie.CreatedContext, opt option) error {
 
 		dbCtx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 
-		// 不存在用户则创建默认管理员
 		count, err := db.WithContext(dbCtx).Model(&model.User{}).Count()
 		if err != nil {
 			return err
