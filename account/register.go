@@ -26,7 +26,7 @@ type RegisterOutput struct {
 }
 
 func register(cc pie.CreatedContext, opt option) interface{} {
-	db := cc.Get("postgres").(*pg.DB)
+	db := cc.Get("db").(*pg.DB)
 	c := cc.Get("captcha").(Captcha)
 
 	return func(ctx context.Context, input RegisterInput) (*RegisterOutput, error) {
@@ -37,7 +37,6 @@ func register(cc pie.CreatedContext, opt option) interface{} {
 			return nil, err
 		}
 
-		// 图形验证码
 		if opt.RegisterImageCaptcha {
 			if err := c.ValidateImageCaptcha(input.ImageCaptchaId, input.ImageCaptchaCode); err != nil {
 				return nil, err
@@ -53,7 +52,7 @@ func register(cc pie.CreatedContext, opt option) interface{} {
 
 		switch input.Method {
 		case model.RegisterMethodMobile:
-			// 短信验证码
+			// sms captcha
 			if input.SmsCaptchaCode == nil {
 				return nil, ErrCaptchaInvalid
 			}
@@ -61,27 +60,27 @@ func register(cc pie.CreatedContext, opt option) interface{} {
 				return nil, err
 			}
 
-			// 查询用户是否已存在
+			// find user
 			if err := tx.Model(&user).Limit(1).Where(string(input.Method)+" = ?", input.Identifier).Select(); err == nil {
 				return nil, ErrMobileExists
 			}
 
-			// 如果有邀请码则设置上级用户
+			// register by promo code
 			parent := model.User{}
 			if input.PromoCode != nil {
 				if err := tx.Model(&parent).Where("promo_code = ?", input.PromoCode).Select(); err != nil {
 					if err == pg.ErrNoRows {
-						// 如果邀请码无效则忽略
+						// ignore
 					} else {
 						return nil, err
 					}
 				} else {
-					// 设置上级
+					// set parent
 					user.ParentId = &parent.Id
 				}
 			}
 
-			// 设置用户参数
+			// set user
 			password, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
 			if err != nil {
 				return nil, err
@@ -92,7 +91,7 @@ func register(cc pie.CreatedContext, opt option) interface{} {
 			user.Role = model.RoleUser
 			user.PromoCode = strings.ReplaceAll(uuid.NewV4().String(), "-", "")[:11]
 			user.Enabled = true
-			// 插入用户
+			// insert user
 			if err := tx.Insert(&user); err != nil {
 				return nil, err
 			}
@@ -104,6 +103,7 @@ func register(cc pie.CreatedContext, opt option) interface{} {
 			return nil, err
 		}
 
+		// generate token
 		token, err := pie.AuthJwt(user.Id.String(), string(user.Role))
 		if err != nil {
 			return nil, err

@@ -22,7 +22,7 @@ type LoginOutput struct {
 }
 
 func login(cc pie.CreatedContext, opt option) interface{} {
-	db := cc.Get("postgres").(*pg.DB)
+	db := cc.Get("db").(*pg.DB)
 	c := cc.Get("captcha").(Captcha)
 
 	return func(ctx context.Context, input LoginInput) (*LoginOutput, error) {
@@ -37,13 +37,11 @@ func login(cc pie.CreatedContext, opt option) interface{} {
 
 		switch input.Method {
 		case model.LoginMethodName, model.LoginMethodMobile:
-			// 图形验证码
 			if opt.LoginImageCaptcha {
 				if err := c.ValidateImageCaptcha(input.ImageCaptchaId, input.ImageCaptchaCode); err != nil {
 					return nil, err
 				}
 			}
-			// 查找用户
 			if err := validation.ValidateStruct(&input,
 				validation.Field(&input.Password, validation.Required, validation.Length(6, 32)),
 			); err != nil {
@@ -55,12 +53,10 @@ func login(cc pie.CreatedContext, opt option) interface{} {
 				}
 				return nil, err
 			}
-			// 比对密码
 			if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password)); err != nil {
 				return nil, ErrInvalidCredentials
 			}
 		case model.LoginMethodSms:
-			// 短信验证码登录
 			if err := c.ValidateSmsCaptcha(input.Identifier, input.Password); err != nil {
 				return nil, err
 			}
@@ -74,14 +70,13 @@ func login(cc pie.CreatedContext, opt option) interface{} {
 			return nil, ErrLoginMethodNotFound
 		}
 
-		// 用户是否启用
 		if !user.Enabled {
 			return nil, ErrUserNotEnabled
 		}
 
 		cc.Logger().Infof("Identifier %s, method %s, login success", input.Identifier, input.Method)
 
-		// 生成令牌
+		// generate token
 		token, err := pie.AuthJwt(user.Id.String(), string(user.Role))
 		if err != nil {
 			return nil, err

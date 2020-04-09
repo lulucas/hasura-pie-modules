@@ -45,7 +45,7 @@ func (m *sms) BeforeCreated(bc pie.BeforeCreatedContext) {
 }
 
 func (m *sms) Created(cc pie.CreatedContext) {
-	m.db = cc.Get("postgres").(*pg.DB)
+	m.db = cc.Get("db").(*pg.DB)
 	m.logger = cc.Logger()
 }
 

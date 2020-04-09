@@ -19,7 +19,7 @@ type UpdatePasswordOutput struct {
 }
 
 func updatePassword(cc pie.CreatedContext, opt option) interface{} {
-	db := cc.Get("postgres").(*pg.DB)
+	db := cc.Get("db").(*pg.DB)
 	c := cc.Get("captcha").(Captcha)
 
 	return func(ctx context.Context, input UpdatePasswordInput) (*UpdatePasswordOutput, error) {
@@ -38,7 +38,7 @@ func updatePassword(cc pie.CreatedContext, opt option) interface{} {
 			return nil, err
 		}
 
-		// 短信验证码
+		// sms captcha
 		if opt.UpdatePasswordSmsCaptcha {
 			if user.Mobile == nil || input.Captcha == nil {
 				return nil, ErrCaptchaInvalid
@@ -64,7 +64,7 @@ func updatePassword(cc pie.CreatedContext, opt option) interface{} {
 
 		cc.Logger().Infof("User id: %s, name: %s,change password success", user.Id, user.Name)
 
-		// 生成令牌
+		// generate token
 		token, err := pie.AuthJwt(user.Id.String(), string(user.Role))
 		if err != nil {
 			return nil, err

@@ -12,7 +12,7 @@ import (
 )
 
 func notify(cc pie.CreatedContext, channels map[string]channel.Channel) echo.HandlerFunc {
-	db := cc.Get("postgres").(*pg.DB)
+	db := cc.Get("db").(*pg.DB)
 
 	return func(c echo.Context) error {
 		channelIdStr := c.Param("channelId")
