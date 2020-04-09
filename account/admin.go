@@ -2,8 +2,8 @@ package account
 
 import (
 	"context"
-	validation "github.com/go-ozzo/ozzo-validation/v3"
-	"github.com/go-ozzo/ozzo-validation/v3/is"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/go-ozzo/ozzo-validation/v4/is"
 	"github.com/go-pg/pg/v9"
 	pie "github.com/lulucas/hasura-pie"
 	"github.com/lulucas/hasura-pie-modules/account/model"

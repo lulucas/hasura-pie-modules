@@ -2,7 +2,7 @@ package account
 
 import (
 	"context"
-	validation "github.com/go-ozzo/ozzo-validation/v3"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-pg/pg/v9"
 	pie "github.com/lulucas/hasura-pie"
 	"github.com/lulucas/hasura-pie-modules/account/model"
@@ -26,7 +26,6 @@ type RegisterOutput struct {
 }
 
 func register(cc pie.CreatedContext, opt option) interface{} {
-	db := cc.Get("db").(*pg.DB)
 	c := cc.Get("captcha").(Captcha)
 
 	return func(ctx context.Context, input RegisterInput) (*RegisterOutput, error) {
@@ -45,7 +44,7 @@ func register(cc pie.CreatedContext, opt option) interface{} {
 
 		user := model.User{}
 
-		tx, err := db.WithContext(ctx).Begin()
+		tx, err := cc.DB().WithContext(ctx).Begin()
 		if err != nil {
 			return nil, err
 		}

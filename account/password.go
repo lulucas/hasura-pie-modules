@@ -2,7 +2,7 @@ package account
 
 import (
 	"context"
-	validation "github.com/go-ozzo/ozzo-validation/v3"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-pg/pg/v9"
 	pie "github.com/lulucas/hasura-pie"
 	"github.com/lulucas/hasura-pie-modules/account/model"
@@ -19,7 +19,6 @@ type UpdatePasswordOutput struct {
 }
 
 func updatePassword(cc pie.CreatedContext, opt option) interface{} {
-	db := cc.Get("db").(*pg.DB)
 	c := cc.Get("captcha").(Captcha)
 
 	return func(ctx context.Context, input UpdatePasswordInput) (*UpdatePasswordOutput, error) {
@@ -31,7 +30,7 @@ func updatePassword(cc pie.CreatedContext, opt option) interface{} {
 
 		user := model.User{}
 		userId := cc.GetSession(ctx).UserId
-		if err := db.WithContext(ctx).Model(&user).Where("id = ?", userId).Select(); err != nil {
+		if err := cc.DB().WithContext(ctx).Model(&user).Where("id = ?", userId).Select(); err != nil {
 			if err == pg.ErrNoRows {
 				return nil, ErrInvalidCredentials
 			}
@@ -55,7 +54,7 @@ func updatePassword(cc pie.CreatedContext, opt option) interface{} {
 
 		user.Password = string(password)
 
-		if _, err := db.WithContext(ctx).
+		if _, err := cc.DB().WithContext(ctx).
 			Model(&user).
 			Where("id = ?", userId).
 			Set("password = ?", user.Password).Update(); err != nil {

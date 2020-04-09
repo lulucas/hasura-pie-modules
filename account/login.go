@@ -2,7 +2,7 @@ package account
 
 import (
 	"context"
-	"github.com/go-ozzo/ozzo-validation/v3"
+	"github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-pg/pg/v9"
 	pie "github.com/lulucas/hasura-pie"
 	"github.com/lulucas/hasura-pie-modules/account/model"
@@ -22,7 +22,6 @@ type LoginOutput struct {
 }
 
 func login(cc pie.CreatedContext, opt option) interface{} {
-	db := cc.Get("db").(*pg.DB)
 	c := cc.Get("captcha").(Captcha)
 
 	return func(ctx context.Context, input LoginInput) (*LoginOutput, error) {
@@ -47,7 +46,7 @@ func login(cc pie.CreatedContext, opt option) interface{} {
 			); err != nil {
 				return nil, err
 			}
-			if err := db.WithContext(ctx).Model(&user).Where(string(input.Method)+" = ?", input.Identifier).Select(); err != nil {
+			if err := cc.DB().WithContext(ctx).Model(&user).Where(string(input.Method)+" = ?", input.Identifier).Select(); err != nil {
 				if err == pg.ErrNoRows {
 					return nil, ErrInvalidCredentials
 				}
@@ -60,7 +59,7 @@ func login(cc pie.CreatedContext, opt option) interface{} {
 			if err := c.ValidateSmsCaptcha(input.Identifier, input.Password); err != nil {
 				return nil, err
 			}
-			if err := db.WithContext(ctx).Model(&user).Where("mobile = ?", input.Identifier).Select(); err != nil {
+			if err := cc.DB().WithContext(ctx).Model(&user).Where("mobile = ?", input.Identifier).Select(); err != nil {
 				if err == pg.ErrNoRows {
 					return nil, ErrInvalidCredentials
 				}

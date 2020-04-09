@@ -1,7 +1,6 @@
 package pay
 
 import (
-	"github.com/go-pg/pg/v9"
 	"github.com/labstack/echo/v4"
 	pie "github.com/lulucas/hasura-pie"
 	"github.com/lulucas/hasura-pie-modules/infra/pay/channel"
@@ -12,8 +11,6 @@ import (
 )
 
 func notify(cc pie.CreatedContext, channels map[string]channel.Channel) echo.HandlerFunc {
-	db := cc.Get("db").(*pg.DB)
-
 	return func(c echo.Context) error {
 		channelIdStr := c.Param("id")
 		channelId, err := strconv.Atoi(channelIdStr)
@@ -30,7 +27,7 @@ func notify(cc pie.CreatedContext, channels map[string]channel.Channel) echo.Han
 			userId = &id
 		}
 
-		tx, err := db.WithContext(c.Request().Context()).Begin()
+		tx, err := cc.DB().WithContext(c.Request().Context()).Begin()
 		if err != nil {
 			return err
 		}
