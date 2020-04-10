@@ -23,5 +23,5 @@ func (m *analysis) Created(cc pie.CreatedContext) {
 	cc.Rest().GET("/visit/hit.gif", hit(m))
 
 	cc.HandleAction("visit_unique_views", visitUniqueViews(m))
-	cc.HandleAction("visit_page_views", visitUniqueViews(m))
+	cc.HandleAction("visit_page_views", visitPageViews(m))
 }
