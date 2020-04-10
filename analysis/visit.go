@@ -1,6 +1,7 @@
 package analysis
 
 import (
+	"context"
 	"fmt"
 	"github.com/go-redis/redis/v7"
 	"github.com/labstack/echo/v4"
@@ -27,10 +28,10 @@ func hit(m *analysis) echo.HandlerFunc {
 		cid := u.Host
 		path := u.Path
 
-		if err := m.Incr(systemClientId, gid, path, ref); err != nil {
+		if err := m.Hit(systemClientId, gid, path, ref); err != nil {
 			return err
 		}
-		if err := m.Incr(cid, gid, path, ref); err != nil {
+		if err := m.Hit(cid, gid, path, ref); err != nil {
 			return err
 		}
 
@@ -38,8 +39,73 @@ func hit(m *analysis) echo.HandlerFunc {
 	}
 }
 
-func (m *analysis) Incr(cid, gid, path, ref string) error {
-	// 增加PV
+func visitUniqueViews(m *analysis) interface{} {
+	type VisitUniqueViewsOutput struct {
+		UniqueViews []*model.DailyView
+	}
+	return func(ctx context.Context, input struct{
+		ClientId *string
+		StartTime *time.Time
+		EndTime *time.Time
+	}) (*VisitUniqueViewsOutput, error) {
+		cid := systemClientId
+		if input.ClientId != nil {
+			cid = *input.ClientId
+		}
+		endTime := time.Now()
+		startTime := endTime.AddDate(0, -1, 0)
+		if input.StartTime != nil {
+			startTime = *input.StartTime
+		}
+		if input.EndTime != nil {
+			endTime = *input.EndTime
+		}
+
+		uvs, err := m.GetUniquesViews(cid, startTime, endTime)
+		if err != nil {
+			return nil, err
+		}
+
+		return &VisitUniqueViewsOutput{
+			UniqueViews: uvs,
+		}, nil
+	}
+}
+
+func visitPageViews(m *analysis) interface{} {
+	type VisitPageViewsOutput struct {
+		PageViews []*model.DailyView
+	}
+	return func(ctx context.Context, input struct{
+		ClientId *string
+		StartTime *time.Time
+		EndTime *time.Time
+	}) (*VisitPageViewsOutput, error) {
+		cid := systemClientId
+		if input.ClientId != nil {
+			cid = *input.ClientId
+		}
+		endTime := time.Now()
+		startTime := endTime.AddDate(0, -1, 0)
+		if input.StartTime != nil {
+			startTime = *input.StartTime
+		}
+		if input.EndTime != nil {
+			endTime = *input.EndTime
+		}
+
+		pvs, err := m.GetPageViews(cid, startTime, endTime)
+		if err != nil {
+			return nil, err
+		}
+
+		return &VisitPageViewsOutput{
+			PageViews: pvs,
+		}, nil
+	}
+}
+
+func (m *analysis) Hit(cid, gid, path, ref string) error {
 	pvKey := fmt.Sprintf("%s:%s:pvidx", visitKey, cid)
 	pvIndex, err := m.r.Incr(pvKey).Result()
 	if err != nil {
@@ -81,7 +147,7 @@ func (m *analysis) Incr(cid, gid, path, ref string) error {
 }
 
 // 获取UV
-func (m *analysis) GetUniquesViews(cid string, start, end time.Time) ([]*model.UniqueView, error) {
+func (m *analysis) GetUniquesViews(cid string, start, end time.Time) ([]*model.DailyView, error) {
 	pipe := m.r.Pipeline()
 
 	type DateIntCmd struct {
@@ -106,13 +172,13 @@ func (m *analysis) GetUniquesViews(cid string, start, end time.Time) ([]*model.U
 		return nil, err
 	}
 
-	var uvs []*model.UniqueView
+	var uvs []*model.DailyView
 	for _, dc := range dcs {
 		count, err := dc.Cmd.Result()
 		if err != nil {
 			return nil, err
 		}
-		uvs = append(uvs, &model.UniqueView{
+		uvs = append(uvs, &model.DailyView{
 			Date:  dc.Date,
 			Count: count,
 		})
@@ -139,7 +205,7 @@ func (m *analysis) getMatchingKeys(pattern string) []string {
 }
 
 // 获取PV
-func (m *analysis) GetPageViews(cid string, startTime, endTime time.Time) ([]*model.PageView, error) {
+func (m *analysis) GetPageViews(cid string, startTime, endTime time.Time) ([]*model.DailyView, error) {
 	return m.getAllPageViews(cid, startTime, endTime)
 }
 
@@ -179,7 +245,7 @@ func (m *analysis) getPageViewsByPath(cid, ref string, startTime, endTime time.T
 }
 
 // 获取所有PV
-func (m *analysis) getAllPageViews(cid string, startTime, endTime time.Time) ([]*model.PageView, error) {
+func (m *analysis) getAllPageViews(cid string, startTime, endTime time.Time) ([]*model.DailyView, error) {
 	refKey := fmt.Sprintf("%s:%s:timeidx", visitKey, cid)
 
 	type DateIntCmd struct {
@@ -204,13 +270,13 @@ func (m *analysis) getAllPageViews(cid string, startTime, endTime time.Time) ([]
 		return nil, err
 	}
 
-	var pvs []*model.PageView
+	var pvs []*model.DailyView
 	for _, dc := range dcs {
 		count, err := dc.Cmd.Result()
 		if err != nil {
 			return nil, err
 		}
-		pvs = append(pvs, &model.PageView{
+		pvs = append(pvs, &model.DailyView{
 			Date:  dc.Date,
 			Count: count,
 		})

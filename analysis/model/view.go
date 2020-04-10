@@ -1,11 +1,6 @@
 package model
 
-type UniqueView struct {
-	Date  string
-	Count int64
-}
-
-type PageView struct {
+type DailyView struct {
 	Date  string
 	Count int64
 }

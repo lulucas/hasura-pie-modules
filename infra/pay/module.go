@@ -34,5 +34,5 @@ func (m *pay) BeforeCreated(bc pie.BeforeCreatedContext) {
 func (m *pay) Created(cc pie.CreatedContext) {
 	m.db = cc.DB()
 
-	cc.Http().POST("/pay/notify/:id/:uid", notify(cc, m.channels))
+	cc.Rest().POST("/notify/:id/:uid", notify(cc, m.channels))
 }

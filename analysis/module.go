@@ -20,5 +20,8 @@ func (m *analysis) BeforeCreated(bc pie.BeforeCreatedContext) {
 func (m *analysis) Created(cc pie.CreatedContext) {
 	m.r = cc.Get("redis").(*redis.Client)
 
-	cc.Http().GET("/visit/hit.gif", hit(m))
+	cc.Rest().GET("/visit/hit.gif", hit(m))
+
+	cc.HandleAction("visit_unique_views", visitUniqueViews(m))
+	cc.HandleAction("visit_page_views", visitUniqueViews(m))
 }
