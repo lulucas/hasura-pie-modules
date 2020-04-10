@@ -14,16 +14,10 @@ type Channel interface {
 }
 
 type Notification struct {
-	// 订单金额
-	OrderAmount decimal.Decimal
-	// 实收金额
+	OrderAmount    decimal.Decimal
 	ReceivedAmount decimal.Decimal
-	// 订单编号
-	OrderId uuid.UUID
-	// 外部编号
-	OutTradeNo string
-	// 附加参数
-	Attach string
-	// 是否支付
-	IsPaid bool
+	OrderId        uuid.UUID
+	OutTradeNo     string
+	Attach         string
+	IsPaid         bool
 }
