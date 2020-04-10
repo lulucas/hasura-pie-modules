@@ -20,18 +20,15 @@ type Sms interface {
 	SendCaptcha(ctx context.Context, mobile, captcha string, ttl time.Duration) error
 }
 
-type SendSmsCaptchaInput struct {
-	Mobile string
-}
-
-type SendSmsCaptchaOutput struct {
-	Result bool
-}
-
 func sendSmsCaptcha(cc pie.CreatedContext) interface{} {
+	type SendSmsCaptchaOutput struct {
+		Result bool
+	}
 	sms := cc.Get("sms").(Sms)
 	r := cc.Get("redis").(*redis.Client)
-	return func(ctx context.Context, input SendSmsCaptchaInput) (*SendSmsCaptchaOutput, error) {
+	return func(ctx context.Context, input struct {
+		Mobile string
+	}) (*SendSmsCaptchaOutput, error) {
 		key := fmt.Sprintf("captcha:sms:%s", input.Mobile)
 		// 检查发送间隔
 		ttl, err := r.TTL(key).Result()

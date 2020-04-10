@@ -9,19 +9,17 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type UpdatePasswordInput struct {
-	Password string
-	Captcha  *string
-}
-
-type UpdatePasswordOutput struct {
-	Token string
-}
-
 func updatePassword(cc pie.CreatedContext, opt option) interface{} {
 	c := cc.Get("captcha").(Captcha)
 
-	return func(ctx context.Context, input UpdatePasswordInput) (*UpdatePasswordOutput, error) {
+	type UpdatePasswordOutput struct {
+		Token string
+	}
+
+	return func(ctx context.Context, input struct {
+		Password   string
+		SmsCaptcha *string
+	}) (*UpdatePasswordOutput, error) {
 		if err := validation.ValidateStruct(&input,
 			validation.Field(&input.Password, validation.Required, validation.Length(6, 32)),
 		); err != nil {
@@ -39,10 +37,10 @@ func updatePassword(cc pie.CreatedContext, opt option) interface{} {
 
 		// sms captcha
 		if opt.UpdatePasswordSmsCaptcha {
-			if user.Mobile == nil || input.Captcha == nil {
+			if user.Mobile == nil || input.SmsCaptcha == nil {
 				return nil, ErrCaptchaInvalid
 			}
-			if err := c.ValidateSmsCaptcha(*user.Mobile, *input.Captcha); err != nil {
+			if err := c.ValidateSmsCaptcha(*user.Mobile, *input.SmsCaptcha); err != nil {
 				return nil, err
 			}
 		}
@@ -61,7 +59,7 @@ func updatePassword(cc pie.CreatedContext, opt option) interface{} {
 			return nil, err
 		}
 
-		cc.Logger().Infof("User id: %s, name: %s,change password success", user.Id, user.Name)
+		cc.Logger().Infof("User id: %s, name: %s, change password success", user.Id, user.Name)
 
 		// generate token
 		token, err := pie.AuthJwt(user.Id.String(), string(user.Role))
@@ -73,3 +71,5 @@ func updatePassword(cc pie.CreatedContext, opt option) interface{} {
 		}, nil
 	}
 }
+
+// TODO RECOVER PASSWORD
