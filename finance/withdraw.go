@@ -62,7 +62,7 @@ func withdraw(cc pie.CreatedContext) interface{} {
 			UserId:  userId,
 			Amount:  input.Amount,
 			Bank:    account.Bank,
-			Account: account.Account,
+			Account: account.Identity,
 			Holder:  account.Holder,
 			Status:  model.WithdrawStatusPending,
 		}

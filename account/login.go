@@ -15,6 +15,7 @@ type LoginInput struct {
 	Method           model.LoginMethod
 	ImageCaptchaId   string
 	ImageCaptchaCode string
+	SmsCaptchaCode   string
 }
 
 type LoginOutput struct {
@@ -56,7 +57,7 @@ func login(cc pie.CreatedContext, opt option) interface{} {
 				return nil, ErrInvalidCredentials
 			}
 		case model.LoginMethodSms:
-			if err := c.ValidateSmsCaptcha(input.Identifier, input.Password); err != nil {
+			if err := c.ValidateSmsCaptcha(input.Identifier, input.SmsCaptchaCode); err != nil {
 				return nil, err
 			}
 			if err := cc.DB().WithContext(ctx).Model(&user).Where("mobile = ?", input.Identifier).Select(); err != nil {
