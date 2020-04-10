@@ -68,9 +68,8 @@ func New() *BF {
 	return &BF{}
 }
 
-// method取值范围url,image_url,image_base64
-func (ch *BF) Pay(orderId uuid.UUID, userId *uuid.UUID, amount decimal.Decimal, returnUrl, notifyUrl, title, clientIp string,
-	channelId int32, rawParams json.RawMessage) (method, data string, err error) {
+func (ch *BF) Pay(channelId int32, orderId uuid.UUID, userId *uuid.UUID, amount decimal.Decimal, title, returnUrl, notifyUrl, attach, clientIp string,
+	rawParams json.RawMessage) (method, data string, err error) {
 	params := Params{}
 	if err := json.Unmarshal(rawParams, &params); err != nil {
 		return "", "", err
@@ -118,7 +117,7 @@ func (ch *BF) Pay(orderId uuid.UUID, userId *uuid.UUID, amount decimal.Decimal, 
 		return "", "", err
 	}
 	if sign != res.Sign {
-		return "", "", errors.New("pay gateway signed error")
+		return "", "", errors.New("pay.gate")
 	}
 
 	return model.MethodUrl, res.PayUrl, nil

@@ -8,7 +8,7 @@ import (
 )
 
 type Channel interface {
-	Pay(orderId uuid.UUID, userId *uuid.UUID, amount decimal.Decimal, returnUrl, notifyUrl, title, clientIp string, channelId int32, params json.RawMessage) (method, data string, err error)
+	Pay(channelId int32, orderId uuid.UUID, userId *uuid.UUID, amount decimal.Decimal, title, returnUrl, notifyUrl, attach, clientIp string, params json.RawMessage) (method, data string, err error)
 	Notify(c echo.Context, rawParams json.RawMessage) (*Notification, error)
 	ConfirmNotify(c echo.Context) error
 }

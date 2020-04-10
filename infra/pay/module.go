@@ -6,11 +6,9 @@ import (
 	"github.com/lulucas/hasura-pie-modules/infra/pay/channel"
 	"github.com/lulucas/hasura-pie-modules/infra/pay/channel/bf"
 	"github.com/sarulabs/di"
-	"github.com/shopspring/decimal"
 )
 
 type pay struct {
-	pie.DefaultModule
 	db       *pg.DB
 	channels map[string]channel.Channel
 }
@@ -37,9 +35,4 @@ func (m *pay) Created(cc pie.CreatedContext) {
 	m.db = cc.DB()
 
 	cc.Http().POST("/pay/notify/:id/:uid", notify(cc, m.channels))
-}
-
-func (m *pay) Pay(id int, amount decimal.Decimal, returnUrl string) error {
-
-	return nil
 }
