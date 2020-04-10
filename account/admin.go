@@ -4,15 +4,13 @@ import (
 	"context"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
-	"github.com/go-pg/pg/v9"
 	pie "github.com/lulucas/hasura-pie"
 	"github.com/lulucas/hasura-pie-modules/account/model"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
 
-func createDefaultAdmin(ctx pie.CreatedContext, opt option) error {
-	db := ctx.Get("postgres").(*pg.DB)
+func createDefaultAdmin(cc pie.CreatedContext, opt option) error {
 	if opt.DefaultAdminName != "" && opt.DefaultAdminPassword != "" {
 		if err := validation.ValidateStruct(&opt,
 			validation.Field(&opt.DefaultAdminName, validation.Required, validation.Length(5, 32), is.Alphanumeric),
@@ -27,12 +25,12 @@ func createDefaultAdmin(ctx pie.CreatedContext, opt option) error {
 
 		dbCtx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 
-		count, err := db.WithContext(dbCtx).Model(&model.User{}).Count()
+		count, err := cc.DB().WithContext(dbCtx).Model(&model.User{}).Count()
 		if err != nil {
 			return err
 		}
 		if count == 0 {
-			if err := db.WithContext(dbCtx).Insert(&model.User{
+			if err := cc.DB().WithContext(dbCtx).Insert(&model.User{
 				Name:     opt.DefaultAdminName,
 				Password: string(hashedPassword),
 				Role:     model.RoleAdmin,
@@ -40,7 +38,7 @@ func createDefaultAdmin(ctx pie.CreatedContext, opt option) error {
 			}); err != nil {
 				return err
 			}
-			ctx.Logger().Warnf("Create default admin, name: %s", opt.DefaultAdminName)
+			cc.Logger().Warnf("Create default admin, name: %s", opt.DefaultAdminName)
 		}
 	}
 
