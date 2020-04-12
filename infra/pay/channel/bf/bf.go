@@ -109,6 +109,9 @@ func (ch *BF) Pay(channelId int32, orderId uuid.UUID, userId *uuid.UUID, amount 
 	}
 
 	if res.ErrorCode != "0" {
+		if res.ErrorCode == "1005" {
+			return "", "", errors.New("error.pay.channel-busy")
+		}
 		return "", "", errors.Errorf("pay gateway error code: %s, message: %s", res.ErrorCode, res.ErrorMsg)
 	}
 
