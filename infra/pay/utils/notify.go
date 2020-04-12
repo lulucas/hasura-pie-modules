@@ -10,12 +10,14 @@ import (
 
 func JoinNotifyUrl(rawUrl string, channelId int32, userId *uuid.UUID) string {
 	if rawUrl == "" {
-		rawUrl = "https://" + os.Getenv("APP_REST_HOST")
+		rawUrl = "https://" + os.Getenv("APP_REST_HOST") + "/notify"
 	}
 	u, _ := url.Parse(rawUrl)
 	joins := []string{u.Path, strconv.Itoa(int(channelId))}
 	if userId != nil {
 		joins = append(joins, userId.String())
+	} else {
+		joins = append(joins, "")
 	}
 	u.Path = path.Join(joins...)
 	return u.String()
