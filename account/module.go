@@ -7,6 +7,7 @@ import (
 )
 
 var (
+	ErrNameExists             = errors.New("account.name.exists")
 	ErrMobileExists           = errors.New("account.mobile.exists")
 	ErrLoginMethodNotFound    = errors.New("account.login-method-not-found")
 	ErrRegisterMethodNotFound = errors.New("account.register-method-not-found")

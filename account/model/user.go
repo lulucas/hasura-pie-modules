@@ -14,8 +14,8 @@ const (
 func (m LoginMethod) In(methods ...LoginMethod) bool {
 	for _, method := range methods {
 		if m == method {
+			return true
 		}
-		return true
 	}
 	return false
 }
@@ -31,8 +31,8 @@ const (
 func (m RegisterMethod) In(methods ...RegisterMethod) bool {
 	for _, method := range methods {
 		if m == method {
+			return true
 		}
-		return true
 	}
 	return false
 }
@@ -50,8 +50,8 @@ const (
 func (r Role) In(roles ...Role) bool {
 	for _, role := range roles {
 		if r == role {
+			return true
 		}
-		return true
 	}
 	return false
 }

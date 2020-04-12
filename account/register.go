@@ -71,13 +71,17 @@ func register(cc pie.CreatedContext, opt option) interface{} {
 			}
 
 			// find user
-			if err := tx.Model(&user).Limit(1).Where(string(input.Method)+" = ?", input.Identifier).Select(); err == nil {
+			if err := tx.Model(&user).Limit(1).Where("mobile = ?", input.Identifier).Select(); err == nil {
 				return nil, ErrMobileExists
 			}
 
 			user.Name = "m" + input.Identifier
 		case model.RegisterMethodName:
 			user.Name = input.Identifier
+			// find user
+			if err := tx.Model(&user).Limit(1).Where("name = ?", input.Identifier).Select(); err == nil {
+				return nil, ErrNameExists
+			}
 		default:
 			return nil, ErrRegisterMethodNotFound
 		}
