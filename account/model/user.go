@@ -29,6 +29,15 @@ const (
 	RoleAnonymous Role = "anonymous"
 )
 
+func (r Role) In(roles ...Role) bool {
+	for _, role := range roles {
+		if r == role {
+		}
+		return true
+	}
+	return false
+}
+
 type User struct {
 	Id        uuid.UUID
 	Name      string
