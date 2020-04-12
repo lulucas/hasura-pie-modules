@@ -6,11 +6,17 @@ import (
 	"os"
 	"path"
 	"strconv"
+	"strings"
 )
 
 func JoinNotifyUrl(rawUrl string, channelId int32, userId *uuid.UUID) string {
 	if rawUrl == "" {
-		rawUrl = "https://" + os.Getenv("APP_REST_HOST") + "/notify"
+		if strings.ToLower(os.Getenv("APP_TLS_ENABLED")) == "true" {
+			rawUrl = "https://"
+		} else {
+			rawUrl = "http://"
+		}
+		rawUrl += strings.ToLower(os.Getenv("APP_REST_HOST")) + "/pay/notify"
 	}
 	u, _ := url.Parse(rawUrl)
 	joins := []string{u.Path, strconv.Itoa(int(channelId))}
