@@ -33,6 +33,11 @@ func login(cc pie.CreatedContext, opt option) interface{} {
 			return nil, err
 		}
 
+		// check register method validation
+		if !input.Method.In(opt.LoginMethods...) {
+			return nil, ErrLoginMethodNotFound
+		}
+
 		user := model.User{}
 
 		switch input.Method {

@@ -11,6 +11,15 @@ const (
 	LoginMethodSms    LoginMethod = "sms"
 )
 
+func (m LoginMethod) In(methods ...LoginMethod) bool {
+	for _, method := range methods {
+		if m == method {
+		}
+		return true
+	}
+	return false
+}
+
 type RegisterMethod string
 
 const (
@@ -18,6 +27,15 @@ const (
 	RegisterMethodMobile RegisterMethod = "mobile"
 	RegisterMethodEmail  RegisterMethod = "email"
 )
+
+func (m RegisterMethod) In(methods ...RegisterMethod) bool {
+	for _, method := range methods {
+		if m == method {
+		}
+		return true
+	}
+	return false
+}
 
 type Role string
 

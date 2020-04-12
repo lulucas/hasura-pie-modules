@@ -24,12 +24,12 @@ type option struct {
 	DefaultAdminName     string `envconfig:"optional"`
 	DefaultAdminPassword string `envconfig:"optional"`
 
-	LoginMethods      []string `envconfig:"default=name"`
-	LoginImageCaptcha bool     `envconfig:"default=false"`
+	LoginMethods      []model.LoginMethod `envconfig:"default=name"`
+	LoginImageCaptcha bool                `envconfig:"default=false"`
 
-	RegisterImageCaptcha bool         `envconfig:"default=false"`
-	RegisterMethods      []string     `envconfig:"default=name"`
-	RegisterRoles        []model.Role `envconfig:"default=user;merchant"`
+	RegisterImageCaptcha bool                   `envconfig:"default=false"`
+	RegisterMethods      []model.RegisterMethod `envconfig:"default=name"`
+	RegisterRoles        []model.Role           `envconfig:"default=user;merchant"`
 
 	UpdatePasswordSmsCaptcha bool `envconfig:"default=false"`
 }

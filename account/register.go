@@ -42,6 +42,11 @@ func register(cc pie.CreatedContext, opt option) interface{} {
 			return nil, ErrRoleNotFound
 		}
 
+		// check register method validation
+		if !input.Method.In(opt.RegisterMethods...) {
+			return nil, ErrRegisterMethodNotFound
+		}
+
 		if opt.RegisterImageCaptcha {
 			if err := c.ValidateImageCaptcha(input.ImageCaptchaId, input.ImageCaptchaCode); err != nil {
 				return nil, err
@@ -70,38 +75,41 @@ func register(cc pie.CreatedContext, opt option) interface{} {
 				return nil, ErrMobileExists
 			}
 
-			// register by promo code
-			parent := model.User{}
-			if input.PromoCode != nil {
-				if err := tx.Model(&parent).Where("promo_code = ?", input.PromoCode).Select(); err != nil {
-					if err == pg.ErrNoRows {
-						// ignore
-					} else {
-						return nil, err
-					}
-				} else {
-					// set parent
-					user.ParentId = &parent.Id
-				}
-			}
-
-			// set user
-			password, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
-			if err != nil {
-				return nil, err
-			}
 			user.Name = "m" + input.Identifier
-			user.Mobile = &input.Identifier
-			user.Password = string(password)
-			user.Role = input.Role
-			user.PromoCode = strings.ReplaceAll(uuid.NewV4().String(), "-", "")[:11]
-			user.Enabled = true
-			// insert user
-			if err := tx.Insert(&user); err != nil {
-				return nil, err
-			}
+		case model.RegisterMethodName:
+			user.Name = input.Identifier
 		default:
 			return nil, ErrRegisterMethodNotFound
+		}
+
+		// promo
+		parent := model.User{}
+		if input.PromoCode != nil {
+			if err := tx.Model(&parent).Where("promo_code = ?", input.PromoCode).Select(); err != nil {
+				if err == pg.ErrNoRows {
+					// ignore
+				} else {
+					return nil, err
+				}
+			} else {
+				// set parent
+				user.ParentId = &parent.Id
+			}
+		}
+
+		// set user
+		password, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return nil, err
+		}
+		user.Mobile = &input.Identifier
+		user.Password = string(password)
+		user.Role = input.Role
+		user.PromoCode = strings.ReplaceAll(uuid.NewV4().String(), "-", "")[:11]
+		user.Enabled = true
+		// insert user
+		if err := tx.Insert(&user); err != nil {
+			return nil, err
 		}
 
 		if err := tx.Commit(); err != nil {
