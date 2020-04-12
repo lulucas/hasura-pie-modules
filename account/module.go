@@ -27,7 +27,7 @@ type option struct {
 
 	RegisterImageCaptcha bool     `envconfig:"default=false"`
 	RegisterMethods      []string `envconfig:"default=name"`
-	RegisterRoles        []string `envconfig:"default=user,merchant"`
+	RegisterRoles        []string `envconfig:"default=user;merchant"`
 
 	UpdatePasswordSmsCaptcha bool `envconfig:"default=false"`
 }
