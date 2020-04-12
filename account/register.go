@@ -15,6 +15,7 @@ type RegisterInput struct {
 	Identifier       string
 	Password         string
 	Method           model.RegisterMethod
+	Role             model.Role
 	ImageCaptchaId   string
 	ImageCaptchaCode string
 	SmsCaptchaCode   *string
@@ -32,6 +33,7 @@ func register(cc pie.CreatedContext, opt option) interface{} {
 		if err := validation.ValidateStruct(&input,
 			validation.Field(&input.Identifier, validation.Required, validation.Length(5, 32)),
 			validation.Field(&input.Password, validation.Required, validation.Length(6, 32)),
+			validation.Field(&input.Role, validation.Required, validation.In(opt.RegisterRoles)),
 		); err != nil {
 			return nil, err
 		}
@@ -87,7 +89,7 @@ func register(cc pie.CreatedContext, opt option) interface{} {
 			user.Name = "m" + input.Identifier
 			user.Mobile = &input.Identifier
 			user.Password = string(password)
-			user.Role = model.RoleUser
+			user.Role = input.Role
 			user.PromoCode = strings.ReplaceAll(uuid.NewV4().String(), "-", "")[:11]
 			user.Enabled = true
 			// insert user
