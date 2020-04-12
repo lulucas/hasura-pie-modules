@@ -6,6 +6,7 @@ import (
 	"github.com/go-pg/pg/v9"
 	pie "github.com/lulucas/hasura-pie"
 	"github.com/lulucas/hasura-pie-modules/account/model"
+	"github.com/lulucas/hasura-pie-modules/account/utils"
 	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
 	"strings"
@@ -33,7 +34,7 @@ func register(cc pie.CreatedContext, opt option) interface{} {
 		if err := validation.ValidateStruct(&input,
 			validation.Field(&input.Identifier, validation.Required, validation.Length(5, 32)),
 			validation.Field(&input.Password, validation.Required, validation.Length(6, 32)),
-			validation.Field(&input.Role, validation.Required, validation.In(opt.RegisterRoles)),
+			validation.Field(&input.Role, validation.Required, validation.In(utils.StringSlice2InterfaceSlice(opt.RegisterRoles)...)),
 		); err != nil {
 			return nil, err
 		}
