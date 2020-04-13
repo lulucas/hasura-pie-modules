@@ -22,10 +22,10 @@ type WithdrawLog struct {
 	Bank         string
 	Account      string
 	Holder       string
-	RemarkSubmit *string
+	SubmitRemark *string
 	AuditorId    *uuid.UUID
 	AuditedAt    *time.Time
-	RemarkAudit  *string
+	AuditRemark  *string
 	Status       WithdrawStatus
 	ClientIp     string
 	ClientRegion string

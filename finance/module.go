@@ -11,7 +11,8 @@ type finance struct {
 }
 
 type option struct {
-	WithdrawEnabled bool `envconfig:"optional"`
+	WithdrawEnabled bool `envconfig:"default=false"`
+	RechargeEnabled bool `envconfig:"default=false"`
 }
 
 func New() *finance {
@@ -32,5 +33,9 @@ func (m *finance) Created(cc pie.CreatedContext) {
 		cc.HandleAction("withdraw", withdraw(cc))
 		cc.HandleAction("audit_withdraw", auditWithdraw(cc))
 		cc.HandleAction("reject_withdraw", rejectWithdraw(cc))
+	}
+	if m.opt.RechargeEnabled {
+		cc.HandleAction("recharge", recharge(cc))
+		cc.HandleEvent("recharge_paid", rechargePaid(cc))
 	}
 }

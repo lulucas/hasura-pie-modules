@@ -33,10 +33,10 @@ func withdraw(cc pie.CreatedContext) interface{} {
 		}
 
 		if input.Amount.LessThan(setting.MinAmount) {
-			return nil, errors.Errorf("finance.withdraw.min-withdraw-amount:%s", setting.MinAmount)
+			return nil, errors.Errorf("finance.withdraw.min-amount:%s", setting.MinAmount)
 		}
 		if input.Amount.GreaterThan(setting.MaxAmount) {
-			return nil, errors.Errorf("finance.withdraw.max-amount%s", setting.MaxAmount)
+			return nil, errors.Errorf("finance.withdraw.max-amount:%s", setting.MaxAmount)
 		}
 
 		userId := cc.GetSession(ctx).UserId
@@ -59,7 +59,7 @@ func withdraw(cc pie.CreatedContext) interface{} {
 		}
 
 		withdrawLog := model.WithdrawLog{
-			UserId:  userId,
+			UserId:  *userId,
 			Amount:  input.Amount,
 			Bank:    account.Bank,
 			Account: account.Identity,
@@ -187,7 +187,7 @@ func rejectWithdraw(cc pie.CreatedContext) interface{} {
 		cc.Logger().Infof("Auditor %s audits user %s withdraw %s", userId, withdrawLog.UserId, withdrawLog.Id)
 
 		return &RejectWithdrawOutput{
-			Id: userId,
+			Id: input.Id,
 		}, nil
 	}
 }

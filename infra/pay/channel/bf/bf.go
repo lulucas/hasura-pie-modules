@@ -56,9 +56,9 @@ type Notify struct {
 	OutTradeNo string `json:"out_trade_no" schema:"out_trade_no"`
 	OrderId    string `json:"order_id" schema:"order_id"`
 	// pay_status
-	// 0：未支付
-	// 1：支付成功
-	// 2：支付失败
+	// 0：unpaid
+	// 1：success
+	// 2：failed
 	PayStatus string `json:"pay_status" schema:"pay_status"`
 	TotalFee  string `json:"total_fee" schema:"total_fee"`
 	Body      string `json:"body" schema:"body"`
@@ -68,8 +68,7 @@ func New() *BF {
 	return &BF{}
 }
 
-func (ch *BF) Pay(channelId int32, orderId uuid.UUID, userId *uuid.UUID, amount decimal.Decimal, title, returnUrl, notifyUrl, attach, clientIp string,
-	rawParams json.RawMessage) (method, data string, err error) {
+func (ch *BF) Pay(section string, channelId int32, orderId uuid.UUID, userId *uuid.UUID, amount decimal.Decimal, title string, returnUrl string, notifyUrl string, attach string, clientIp string, rawParams json.RawMessage) (method string, data string, err error) {
 	params := Params{}
 	if err := json.Unmarshal(rawParams, &params); err != nil {
 		return "", "", err
@@ -84,7 +83,7 @@ func (ch *BF) Pay(channelId int32, orderId uuid.UUID, userId *uuid.UUID, amount 
 	req := H5Request{
 		MchId:      params.MchId,
 		BackUrl:    returnUrl,
-		NotifyUrl:  utils.JoinNotifyUrl(notifyUrl, channelId, userId),
+		NotifyUrl:  utils.JoinNotifyUrl(section, notifyUrl, channelId, userId),
 		CardType:   "2",
 		OutTradeNo: strings.ReplaceAll(orderId.String(), "-", ""),
 		Body:       title,

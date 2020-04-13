@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func JoinNotifyUrl(rawUrl string, channelId int32, userId *uuid.UUID) string {
+func JoinNotifyUrl(section, rawUrl string, channelId int32, userId *uuid.UUID) string {
 	if rawUrl == "" {
 		if strings.ToLower(os.Getenv("APP_TLS_ENABLED")) == "true" {
 			rawUrl = "https://"
@@ -19,7 +19,7 @@ func JoinNotifyUrl(rawUrl string, channelId int32, userId *uuid.UUID) string {
 		rawUrl += strings.ToLower(os.Getenv("APP_REST_HOST")) + "/pay/notify"
 	}
 	u, _ := url.Parse(rawUrl)
-	joins := []string{u.Path, strconv.Itoa(int(channelId))}
+	joins := []string{u.Path, section, strconv.Itoa(int(channelId))}
 	if userId != nil {
 		joins = append(joins, userId.String())
 	} else {

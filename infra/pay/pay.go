@@ -13,7 +13,7 @@ var (
 	ErrPayChannelNoEnabled = errors.New("pay.channel-not-enabled")
 )
 
-func (m *pay) Pay(channelId int32, orderId uuid.UUID, userId *uuid.UUID, amount decimal.Decimal,
+func (m *pay) Pay(section string, channelId int32, orderId uuid.UUID, userId *uuid.UUID, amount decimal.Decimal,
 	title, returnUrl, attach, clientIp string) (method string, data string, err error) {
 
 	payChannel := model.PayChannel{}
@@ -38,5 +38,5 @@ func (m *pay) Pay(channelId int32, orderId uuid.UUID, userId *uuid.UUID, amount 
 		return "", "", ErrPayChannelNotFound
 	}
 
-	return ch.Pay(channelId, orderId, userId, amount, title, returnUrl, payChannel.NotifyUrl, attach, clientIp, payChannel.Params)
+	return ch.Pay(section, channelId, orderId, userId, amount, title, returnUrl, payChannel.NotifyUrl, attach, clientIp, payChannel.Params)
 }
