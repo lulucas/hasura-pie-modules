@@ -79,7 +79,7 @@ func NewSignFunc(opt SignOption) SignFunc {
 		if opt.PostSignStrHook != nil {
 			strToSign = opt.PostSignStrHook(strToSign)
 		}
-		fmt.Println(strToSign)
+
 		return opt.HashFunc(strToSign), nil
 	}
 }
