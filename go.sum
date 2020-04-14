@@ -59,8 +59,8 @@ github.com/labstack/gommon v0.3.0 h1:JEeO0bvc78PKdyHxloTKiF8BD5iGrH8T6MSeGvSgob0
 github.com/labstack/gommon v0.3.0/go.mod h1:MULnywXg0yavhxWKc+lOruYdAhDwPK9wf0OL7NoOu+k=
 github.com/levigross/grequests v0.0.0-20190908174114-253788527a1a h1:DGFy/362j92vQRE3ThU1yqg9TuJS8YJOSbQuB7BP9cA=
 github.com/levigross/grequests v0.0.0-20190908174114-253788527a1a/go.mod h1:jVntzcUU+2BtVohZBQmSHWUmh8B55LCNfPhcNCIvvIg=
-github.com/lulucas/hasura-pie v0.1.10 h1:N1FNS2ZGksaZ5nKw+pcBTLPGIj3NSiiQLaoC4FZfON8=
-github.com/lulucas/hasura-pie v0.1.10/go.mod h1:ku/6phhbIpDhiNxBDxVUadYfVYjf2JblIJbM4rypkUE=
+github.com/lulucas/hasura-pie v0.1.11 h1:SFxlYFtrI/WdOsgu06GbhNQrFTxEuA7IrlS286SxNME=
+github.com/lulucas/hasura-pie v0.1.11/go.mod h1:ku/6phhbIpDhiNxBDxVUadYfVYjf2JblIJbM4rypkUE=
 github.com/mattn/go-colorable v0.1.2/go.mod h1:U0ppj6V5qS13XJ6of8GYAs25YV2eR4EVcfRqFIhoBtE=
 github.com/mattn/go-colorable v0.1.6 h1:6Su7aK7lXmJ/U79bYtBjLNaha4Fs1Rg9plHpcH+vvnE=
 github.com/mattn/go-colorable v0.1.6/go.mod h1:u6P/XSegPjTcexA+o6vUJrdnUu04hMope9wVRipJSqc=
