@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func createPromoCode(cc pie.CreatedContext) interface{} {
+func initUserPromoCode(cc pie.CreatedContext) interface{} {
 	type Event struct {
 		pie.Event
 		Old model.User
