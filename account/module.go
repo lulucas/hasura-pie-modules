@@ -48,6 +48,7 @@ func (m *account) Created(cc pie.CreatedContext) {
 	cc.HandleAction("register", register(cc, m.opt))
 	cc.HandleAction("update_password", updatePassword(cc, m.opt))
 
+	cc.HandleEvent("create_promo_code", createPromoCode(cc))
 }
 
 func New() *account {

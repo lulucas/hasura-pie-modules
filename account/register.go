@@ -6,9 +6,7 @@ import (
 	"github.com/go-pg/pg/v9"
 	pie "github.com/lulucas/hasura-pie"
 	"github.com/lulucas/hasura-pie-modules/account/model"
-	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
-	"strings"
 )
 
 type RegisterInput struct {
@@ -109,7 +107,6 @@ func register(cc pie.CreatedContext, opt option) interface{} {
 		user.Mobile = &input.Identifier
 		user.Password = string(password)
 		user.Role = input.Role
-		user.PromoCode = strings.ReplaceAll(uuid.NewV4().String(), "-", "")[:11]
 		user.Enabled = true
 		// insert user
 		if err := tx.Insert(&user); err != nil {

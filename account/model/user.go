@@ -64,6 +64,6 @@ type User struct {
 	Role      Role
 	Password  string
 	ParentId  *uuid.UUID
-	PromoCode string
+	PromoCode *string
 	Enabled   bool
 }
