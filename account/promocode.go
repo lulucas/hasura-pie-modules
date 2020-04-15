@@ -17,7 +17,7 @@ func initUserPromoCode(cc pie.CreatedContext) interface{} {
 	return func(ctx context.Context, evt Event) error {
 		if _, err := cc.DB().Model(&evt.New).
 			Where("id = ?", evt.New.Id).
-			Where("promo_code = ?", nil).
+			Where("promo_code IS NULL").
 			Set("promo_code = ?", strings.ReplaceAll(uuid.NewV4().String(), "-", "")[:11]).
 			Update(); err != nil {
 			return err
