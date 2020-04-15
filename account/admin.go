@@ -6,9 +6,7 @@ import (
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 	pie "github.com/lulucas/hasura-pie"
 	"github.com/lulucas/hasura-pie-modules/account/model"
-	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
-	"strings"
 	"time"
 )
 
@@ -36,7 +34,6 @@ func createDefaultAdmin(cc pie.CreatedContext, opt option) error {
 				Name:     opt.DefaultAdminName,
 				Password: string(hashedPassword),
 				Role:     model.RoleAdmin,
-				PromoCode: strings.ReplaceAll(uuid.NewV4().String(), "-", "")[:11],
 				Enabled:  true,
 			}); err != nil {
 				return err
