@@ -13,21 +13,14 @@ import (
 type SignFunc func(interface{}) (string, error)
 
 type SignOption struct {
-	// 为不参与签名的字段名称 默认空
 	IgnoreKeys []string
-	// 是否跳过空值 默认否
 	IgnoreEmpty bool
-	// 传入键值，返回拼接结果 默认{key}={value}
 	KeyValueFunc func(key, value string) string
-	// 签名字符串后处理，通常用于添加密钥
 	PostSignStrHook func(string) string
-	// 拼接符号 默认&
 	JoinSep string
-	// 哈希算法 默认MD5
 	HashFunc func(string) string
 }
 
-// 通用签名函数
 func NewSignFunc(opt SignOption) SignFunc {
 	if opt.KeyValueFunc == nil {
 		opt.KeyValueFunc = func(key, value string) string {
@@ -39,7 +32,6 @@ func NewSignFunc(opt SignOption) SignFunc {
 		opt.JoinSep = "&"
 	}
 
-	// 默认MD5
 	if opt.HashFunc == nil {
 		opt.HashFunc = func(s string) string {
 			hash := md5.New()

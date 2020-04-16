@@ -33,21 +33,6 @@ type Params struct {
 	CaPublicKey    string `json:"ca_public_key"`
 }
 
-type Notify struct {
-	ErrorCode  string `json:"error_code" schema:"error_code"`
-	ErrorMsg   string `json:"error_msg" schema:"error_msg"`
-	Sign       string `json:"sign" schema:"sign"`
-	OutTradeNo string `json:"out_trade_no" schema:"out_trade_no"`
-	OrderId    string `json:"order_id" schema:"order_id"`
-	// pay_status
-	// 0：unpaid
-	// 1：success
-	// 2：failed
-	PayStatus string `json:"pay_status" schema:"pay_status"`
-	TotalFee  string `json:"total_fee" schema:"total_fee"`
-	Body      string `json:"body" schema:"body"`
-}
-
 func New() *Alipay {
 	return &Alipay{}
 }
@@ -88,9 +73,6 @@ func (ch *Alipay) Pay(section string, channelId int32, orderId uuid.UUID, userId
 		pp.Subject = title
 		pp.OutTradeNo = orderId.String()
 		pp.TotalAmount = amount.StringFixed(2)
-		if userId != nil {
-			pp.PassbackParams += "@" + userId.String()
-		}
 		pp.ProductCode = "FAST_INSTANT_TRADE_PAY"
 		uri, err := client.TradePagePay(pp)
 		if err != nil {
@@ -104,9 +86,6 @@ func (ch *Alipay) Pay(section string, channelId int32, orderId uuid.UUID, userId
 		pp.Subject = title
 		pp.TotalAmount = amount.StringFixed(2)
 		pp.OutTradeNo = orderId.String()
-		if userId != nil {
-			pp.PassbackParams += "@" + userId.String()
-		}
 		rsp, err := client.TradePreCreate(pp)
 		if err != nil {
 			return "", "", err
@@ -120,11 +99,11 @@ func (ch *Alipay) Pay(section string, channelId int32, orderId uuid.UUID, userId
 }
 
 func (ch *Alipay) Notify(c echo.Context, rawParams json.RawMessage) (*channel.Notification, error) {
-	pamras := Params{}
-	if err := json.Unmarshal(rawParams, &pamras); err != nil {
+	params := Params{}
+	if err := json.Unmarshal(rawParams, &params); err != nil {
 		return nil, err
 	}
-	client, err := getClient(pamras)
+	client, err := getClient(params)
 	if err != nil {
 		return nil, err
 	}
