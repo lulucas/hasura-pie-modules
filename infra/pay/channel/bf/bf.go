@@ -68,7 +68,7 @@ func New() *BF {
 	return &BF{}
 }
 
-func (ch *BF) Pay(section string, channelId int32, orderId uuid.UUID, userId *uuid.UUID, amount decimal.Decimal, title string, returnUrl string, notifyUrl string, attach string, clientIp string, rawParams json.RawMessage) (method string, data string, err error) {
+func (ch *BF) Pay(section string, channelId int32, orderId uuid.UUID, userId *uuid.UUID, amount decimal.Decimal, title, returnUrl, notifyUrl, clientIp string, rawParams json.RawMessage) (method string, data string, err error) {
 	params := Params{}
 	if err := json.Unmarshal(rawParams, &params); err != nil {
 		return "", "", err
@@ -165,7 +165,6 @@ func (ch *BF) Notify(c echo.Context, rawParams json.RawMessage) (*channel.Notifi
 		ReceivedAmount: amount,
 		OrderId:        orderId,
 		OutTradeNo:     notify.OrderId,
-		Attach:         "",
 		IsPaid:         notify.PayStatus == "1",
 	}, nil
 }

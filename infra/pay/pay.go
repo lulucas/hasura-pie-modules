@@ -14,7 +14,7 @@ var (
 )
 
 func (m *pay) Pay(section string, channelId int32, orderId uuid.UUID, userId *uuid.UUID, amount decimal.Decimal,
-	title, returnUrl, attach, clientIp string) (method string, data string, err error) {
+	title, returnUrl, clientIp string) (method string, data string, err error) {
 
 	payChannel := model.PayChannel{}
 	if err := m.db.Model(&payChannel).Where("id = ?", channelId).Select(); err != nil {
@@ -38,5 +38,5 @@ func (m *pay) Pay(section string, channelId int32, orderId uuid.UUID, userId *uu
 		return "", "", ErrPayChannelNotFound
 	}
 
-	return ch.Pay(section, channelId, orderId, userId, amount, title, returnUrl, payChannel.NotifyUrl, attach, clientIp, payChannel.Params)
+	return ch.Pay(section, channelId, orderId, userId, amount, title, returnUrl, payChannel.NotifyUrl, clientIp, payChannel.Params)
 }

@@ -4,6 +4,7 @@ import (
 	"github.com/go-pg/pg/v9"
 	pie "github.com/lulucas/hasura-pie"
 	"github.com/lulucas/hasura-pie-modules/infra/pay/channel"
+	"github.com/lulucas/hasura-pie-modules/infra/pay/channel/alipay"
 	"github.com/lulucas/hasura-pie-modules/infra/pay/channel/bf"
 	"github.com/sarulabs/di"
 )
@@ -15,7 +16,8 @@ type pay struct {
 
 func New() *pay {
 	channels := map[string]channel.Channel{
-		"bf": bf.New(),
+		"alipay": alipay.New(),
+		"bf":     bf.New(),
 	}
 	return &pay{
 		channels: channels,

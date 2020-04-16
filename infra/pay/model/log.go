@@ -14,6 +14,5 @@ type PayLog struct {
 	OrderAmount    decimal.Decimal `pg:",use_zero"`
 	ReceivedAmount decimal.Decimal `pg:",use_zero"`
 	OutTradeNo     string
-	Attach         string
 	IsPaid         bool
 }

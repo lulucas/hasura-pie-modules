@@ -59,7 +59,6 @@ func notify(cc pie.CreatedContext, channels map[string]channel.Channel) echo.Han
 			OutTradeNo:     notification.OutTradeNo,
 			OrderAmount:    notification.OrderAmount,
 			ReceivedAmount: notification.ReceivedAmount,
-			Attach:         notification.Attach,
 			IsPaid:         notification.IsPaid,
 		}
 		if err := tx.Insert(&payLog); err != nil {
