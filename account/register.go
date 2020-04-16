@@ -57,6 +57,7 @@ func register(cc pie.CreatedContext, opt option) interface{} {
 		if err != nil {
 			return nil, err
 		}
+		defer tx.Rollback()
 
 		switch input.Method {
 		case model.RegisterMethodMobile:

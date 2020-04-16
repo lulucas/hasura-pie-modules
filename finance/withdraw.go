@@ -26,6 +26,7 @@ func withdraw(cc pie.CreatedContext) interface{} {
 		if err != nil {
 			return nil, err
 		}
+		defer tx.Rollback()
 
 		setting := model.WithdrawSetting{}
 		if err := cc.LoadConfig(model.WithdrawSettingKey, &setting); err != nil {
@@ -70,6 +71,12 @@ func withdraw(cc pie.CreatedContext) interface{} {
 			return nil, err
 		}
 
+		if err := tx.Commit(); err != nil {
+			return nil, err
+		}
+
+		cc.Logger().Infof("Auditor %s audits user %s withdraw %s", userId, withdrawLog.UserId, withdrawLog.Id)
+
 		return &WithdrawOutput{
 			Id: withdrawLog.Id,
 		}, nil
@@ -94,7 +101,6 @@ func auditWithdraw(cc pie.CreatedContext) interface{} {
 			return nil, err
 		}
 
-		// 冻结余额
 		userId := cc.GetSession(ctx).UserId
 		user := model.User{}
 		res, err := tx.Model(&user).
@@ -184,7 +190,7 @@ func rejectWithdraw(cc pie.CreatedContext) interface{} {
 			return nil, err
 		}
 
-		cc.Logger().Infof("Auditor %s audits user %s withdraw %s", userId, withdrawLog.UserId, withdrawLog.Id)
+		cc.Logger().Infof("Auditor %s rejects user %s withdraw %s", userId, withdrawLog.UserId, withdrawLog.Id)
 
 		return &RejectWithdrawOutput{
 			Id: input.Id,

@@ -21,6 +21,7 @@ func recharge(cc pie.CreatedContext) interface{} {
 		if err != nil {
 			return nil, err
 		}
+		defer tx.Rollback()
 
 		setting := model.RechargeSetting{}
 		if err := cc.LoadConfig(model.RechargeSettingKey, &setting); err != nil {
@@ -52,6 +53,11 @@ func recharge(cc pie.CreatedContext) interface{} {
 		if _, err := tx.Model(&rechargeLog).Insert(); err != nil {
 			return nil, err
 		}
+		if err := tx.Commit(); err != nil {
+			return nil, err
+		}
+
+		cc.Logger().Infof("Recharge order %s to %s created", input.Amount, userId)
 
 		return &RechargeOutput{
 			Id: rechargeLog.Id,
@@ -70,6 +76,7 @@ func rechargePaid(cc pie.CreatedContext) interface{} {
 		if err != nil {
 			return err
 		}
+		defer tx.Rollback()
 
 		recharged := !evt.Old.IsPaid && evt.New.IsPaid
 
@@ -100,10 +107,12 @@ func rechargePaid(cc pie.CreatedContext) interface{} {
 				return errors.New("finance.recharge.user-update-failed")
 			}
 		}
-
 		if err := tx.Commit(); err != nil {
 			return err
 		}
+
+		cc.Logger().Infof("Recharge order %s to %s confirmed", rechargeLog.Amount, evt.New.UserId)
+
 		return nil
 	}
 }
