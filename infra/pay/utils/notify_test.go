@@ -15,7 +15,7 @@ func TestJoinNotifyUrl(t *testing.T) {
 	}
 
 	u = JoinNotifyUrl("buy", "http://www.baidu.com/", 11, nil)
-	if u != "http://www.baidu.com/buy, 11" {
+	if u != "http://www.baidu.com/buy/11" {
 		t.Errorf("result url %s unexpected", u)
 	}
 

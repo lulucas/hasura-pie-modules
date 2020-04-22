@@ -28,12 +28,11 @@ func login(cc pie.CreatedContext, opt option) interface{} {
 	return func(ctx context.Context, input LoginInput) (*LoginOutput, error) {
 		if err := validation.ValidateStruct(&input,
 			validation.Field(&input.Identifier, validation.Required, validation.Length(5, 32)),
-			validation.Field(&input.Password, validation.Required, validation.Length(6, 32)),
 		); err != nil {
 			return nil, err
 		}
 
-		// check register method validation
+		// check login method validation
 		if !input.Method.In(opt.LoginMethods...) {
 			return nil, ErrLoginMethodNotFound
 		}
