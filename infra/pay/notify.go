@@ -12,6 +12,7 @@ import (
 
 func notify(cc pie.CreatedContext, channels map[string]channel.Channel) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		section := c.Param("section")
 		channelIdStr := c.Param("id")
 		channelId, err := strconv.Atoi(channelIdStr)
 		if err != nil {
@@ -53,6 +54,7 @@ func notify(cc pie.CreatedContext, channels map[string]channel.Channel) echo.Han
 		}
 
 		payLog := model.PayLog{
+			Section:        section,
 			PayChannelId:   int32(channelId),
 			UserId:         userId,
 			OrderId:        notification.OrderId,
