@@ -31,9 +31,7 @@ type WithdrawLog struct {
 	ClientRegion string
 }
 
-const WithdrawSettingKey = "finance.withdraw"
-
-type WithdrawSetting struct {
+type WithdrawConfig struct {
 	MinAmount         decimal.Decimal
 	MaxAmount         decimal.Decimal
 	MinBalanceReserve decimal.Decimal

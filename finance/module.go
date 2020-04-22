@@ -21,7 +21,7 @@ func New() *finance {
 
 func (m *finance) BeforeCreated(bc pie.BeforeCreatedContext) {
 	bc.LoadFromEnv(&m.opt)
-	bc.InitConfig(model.WithdrawSettingKey, &model.WithdrawSetting{
+	bc.InitConfig(&model.WithdrawConfig{
 		MinAmount:         decimal.NewFromInt(500),
 		MaxAmount:         decimal.NewFromInt(5000),
 		MinBalanceReserve: decimal.Zero,

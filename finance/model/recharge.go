@@ -31,7 +31,5 @@ type RechargeLog struct {
 	ClientRegion string
 }
 
-const RechargeSettingKey = "finance.recharge"
-
-type RechargeSetting struct {
+type RechargeConfig struct {
 }

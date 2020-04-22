@@ -28,8 +28,8 @@ func withdraw(cc pie.CreatedContext) interface{} {
 		}
 		defer tx.Rollback()
 
-		setting := model.WithdrawSetting{}
-		if err := cc.LoadConfig(model.WithdrawSettingKey, &setting); err != nil {
+		setting := model.WithdrawConfig{}
+		if err := cc.LoadConfig(&setting); err != nil {
 			return nil, err
 		}
 

@@ -23,8 +23,8 @@ func recharge(cc pie.CreatedContext) interface{} {
 		}
 		defer tx.Rollback()
 
-		setting := model.RechargeSetting{}
-		if err := cc.LoadConfig(model.RechargeSettingKey, &setting); err != nil {
+		config := model.RechargeConfig{}
+		if err := cc.LoadConfig(&config); err != nil {
 			return nil, err
 		}
 
