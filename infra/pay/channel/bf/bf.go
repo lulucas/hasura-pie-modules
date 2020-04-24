@@ -150,7 +150,7 @@ func (ch *BF) Notify(c echo.Context, rawParams json.RawMessage) (*channel.Notifi
 	}
 
 	if notify.Sign != sign {
-		return nil, errors.New("invalid sign")
+		return nil, errors.New("pay.bf.invalid-sign")
 	}
 
 	amount, err := decimal.NewFromString(notify.TotalFee)

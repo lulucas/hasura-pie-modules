@@ -6,6 +6,7 @@ import (
 	"github.com/lulucas/hasura-pie-modules/infra/pay/channel"
 	"github.com/lulucas/hasura-pie-modules/infra/pay/channel/alipay"
 	"github.com/lulucas/hasura-pie-modules/infra/pay/channel/bf"
+	"github.com/lulucas/hasura-pie-modules/infra/pay/channel/mks101"
 	"github.com/sarulabs/di"
 )
 
@@ -18,6 +19,7 @@ func New() *pay {
 	channels := map[string]channel.Channel{
 		"alipay": alipay.New(),
 		"bf":     bf.New(),
+		"mks101": mks101.New(),
 	}
 	return &pay{
 		channels: channels,

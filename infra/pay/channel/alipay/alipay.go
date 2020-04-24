@@ -117,7 +117,7 @@ func (ch *Alipay) Notify(c echo.Context, rawParams json.RawMessage) (*channel.No
 		return nil, err
 	} else {
 		if !ok {
-			return nil, errors.New("alipay invalid sign")
+			return nil, errors.New("pay.alipay.invalid-sign")
 		}
 	}
 
