@@ -16,7 +16,7 @@ import (
 type Mks101 struct {
 }
 
-const baseUrl = "http://api.mks101.com/api/index"
+const baseUrl = "http://api.mks101.com/api/index/"
 
 type Params struct {
 	MerchantId string `json:"merchant_id" schema:"merchant_id"`
