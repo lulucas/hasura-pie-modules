@@ -8,8 +8,9 @@ import (
 )
 
 var (
-	ErrorSendSmsCaptchaTooQuick = errors.New("captcha.sms.send-too-quick")
-	ErrorImageCaptchaInvalid    = errors.New("captcha.image.captcha-invalid")
+	ErrSendSmsCaptchaTooQuick = errors.New("captcha.sms.send-too-quick")
+	ErrInvalidSmsCaptcha      = errors.New("captcha.sms.invalid")
+	ErrImageCaptchaInvalid    = errors.New("captcha.image.captcha-invalid")
 )
 
 type captcha struct {

@@ -10,10 +10,8 @@ import (
 )
 
 const (
-	// 验证码有效时间
 	SmsCaptchaTTL = 5 * time.Minute
-	// 发送间隔
-	SendInterval = time.Minute
+	SendInterval  = time.Minute
 )
 
 type Sms interface {
@@ -30,21 +28,21 @@ func sendSmsCaptcha(cc pie.CreatedContext) interface{} {
 		Mobile string
 	}) (*SendSmsCaptchaOutput, error) {
 		key := fmt.Sprintf("captcha:sms:%s", input.Mobile)
-		// 检查发送间隔
+		// check send interval
 		ttl, err := r.TTL(key).Result()
 		if err != nil {
 			return nil, err
 		}
 		if SmsCaptchaTTL-ttl < SendInterval {
-			return nil, ErrorSendSmsCaptchaTooQuick
+			return nil, ErrSendSmsCaptchaTooQuick
 		}
 
-		// 发送短信
+		// send sms
 		code := rand.Intn(1_000_000)
 		if err := sms.SendCaptcha(ctx, input.Mobile, fmt.Sprintf("%06d", code), SmsCaptchaTTL); err != nil {
 			return nil, err
 		}
-		// 写入redis记录
+		// record captcha code to redis
 		if err := r.Set(key, code, SmsCaptchaTTL).Err(); err != nil {
 			return nil, err
 		}
@@ -57,24 +55,21 @@ func sendSmsCaptcha(cc pie.CreatedContext) interface{} {
 func (m *captcha) ValidateSmsCaptcha(mobile, captcha string) (err error) {
 	key := fmt.Sprintf("captcha:sms:%s", mobile)
 
-	// 比对redis记录
+	// compare result
 	record, err := m.r.Get(key).Result()
 	if err != nil {
 		if err == redis.Nil {
-			return nil
+			return ErrInvalidSmsCaptcha
 		}
 		return err
 	}
 
-	defer func() {
-		// 不论是否验证成功都删除验证码
-		if redisErr := m.r.Del(fmt.Sprintf("captcha:sms:%s", mobile)).Err(); redisErr != nil {
-			err = redisErr
-		}
-	}()
-
 	if record != captcha {
-		return nil
+		return ErrInvalidSmsCaptcha
+	}
+
+	if redisErr := m.r.Del(fmt.Sprintf("captcha:sms:%s", mobile)).Err(); redisErr != nil {
+		err = redisErr
 	}
 
 	m.logger.Infof("Validate sms captcha %s to %s success", captcha, mobile)

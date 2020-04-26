@@ -40,7 +40,7 @@ func (m *captcha) ValidateImageCaptcha(id, captcha string) (err error) {
 	origin, err := m.r.Get(fmt.Sprintf("captcha:image:%s", id)).Result()
 	if err != nil {
 		if err == redis.Nil {
-			return ErrorImageCaptchaInvalid
+			return ErrImageCaptchaInvalid
 		}
 		return err
 	}
@@ -52,7 +52,7 @@ func (m *captcha) ValidateImageCaptcha(id, captcha string) (err error) {
 	}()
 
 	if origin != captcha {
-		return ErrorImageCaptchaInvalid
+		return ErrImageCaptchaInvalid
 	}
 
 	m.logger.Infof("Validate image captcha %s to %s success", captcha, id)
