@@ -16,7 +16,4 @@ func (f *Fake) SendCaptcha(params json.RawMessage, mobile string, captcha string
 	return nil
 }
 
-type Params struct {
-	Account  string `json:"account"`
-	Password string `json:"password"`
-}
+type Params struct{}
