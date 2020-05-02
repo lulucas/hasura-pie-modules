@@ -1,22 +1,16 @@
 package utils
 
 import (
+	pie "github.com/lulucas/hasura-pie"
 	uuid "github.com/satori/go.uuid"
 	"net/url"
-	"os"
 	"path"
 	"strconv"
-	"strings"
 )
 
 func JoinNotifyUrl(section, rawUrl string, channelId int32, userId *uuid.UUID) string {
 	if rawUrl == "" {
-		if strings.ToLower(os.Getenv("APP_TLS_ENABLED")) == "true" {
-			rawUrl = "https://"
-		} else {
-			rawUrl = "http://"
-		}
-		rawUrl += strings.ToLower(os.Getenv("APP_REST_HOST")) + "/pay/notify"
+		rawUrl = pie.RestBaseUrl() + "/pay/notify"
 	}
 	u, _ := url.Parse(rawUrl)
 	joins := []string{u.Path, section, strconv.Itoa(int(channelId))}

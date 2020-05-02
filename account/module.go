@@ -47,6 +47,7 @@ func (m *account) Created(cc pie.CreatedContext) {
 	cc.HandleAction("login", login(cc, m.opt))
 	cc.HandleAction("register", register(cc, m.opt))
 	cc.HandleAction("update_password", updatePassword(cc, m.opt))
+	cc.HandleAction("recover_password", recoverPassword(cc))
 	cc.HandleAction("refresh_token", refreshToken(cc))
 
 	cc.HandleEvent("init_user_promo_code", initUserPromoCode(cc))
