@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/gorilla/schema"
+	"gopkg.in/asaskevich/govalidator.v9"
 	"net/url"
 	"sort"
 	"strings"
@@ -13,18 +14,18 @@ import (
 type SignFunc func(interface{}) (string, error)
 
 type SignOption struct {
-	IgnoreKeys []string
-	IgnoreEmpty bool
-	KeyValueFunc func(key, value string) string
+	IgnoreKeys      []string
+	IgnoreEmpty     bool
+	KeyValueFunc    func(key, value string) string
 	PostSignStrHook func(string) string
-	JoinSep string
-	HashFunc func(string) string
+	JoinSep         string
+	HashFunc        func(string) string
 }
 
 func NewSignFunc(opt SignOption) SignFunc {
 	if opt.KeyValueFunc == nil {
 		opt.KeyValueFunc = func(key, value string) string {
-			return fmt.Sprintf("%s=%s", key, value)
+			return fmt.Sprintf("%s=%s", govalidator.CamelCaseToUnderscore(key), value)
 		}
 	}
 
