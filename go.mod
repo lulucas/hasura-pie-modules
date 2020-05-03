@@ -13,7 +13,7 @@ require (
 	github.com/labstack/echo/v4 v4.1.16
 	github.com/levigross/grequests v0.0.0-20190908174114-253788527a1a
 	github.com/lionsoul2014/ip2region v2.1.0-release+incompatible
-	github.com/lulucas/hasura-pie v0.1.14
+	github.com/lulucas/hasura-pie v0.1.15
 	github.com/pkg/errors v0.9.1
 	github.com/sarulabs/di v2.0.0+incompatible
 	github.com/satori/go.uuid v1.2.0
