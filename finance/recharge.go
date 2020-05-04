@@ -35,20 +35,11 @@ func recharge(cc pie.CreatedContext) interface{} {
 			return nil, err
 		}
 
-		account := model.Account{}
-		if input.AccountId != nil {
-			if err := tx.Model(&account).Where("id = ?", input.AccountId).Where("enabled = ?", true).Select(); err != nil {
-				return nil, err
-			}
-		}
-
 		rechargeLog := model.RechargeLog{
-			UserId:  *userId,
-			Amount:  input.Amount,
-			Bank:    account.Bank,
-			Account: account.Identity,
-			Holder:  account.Holder,
-			Status:  model.RechargeStatusPending,
+			UserId:     *userId,
+			Amount:     input.Amount,
+			Commission: decimal.Zero,
+			Status:     model.RechargeStatusPending,
 		}
 		if _, err := tx.Model(&rechargeLog).Insert(); err != nil {
 			return nil, err
@@ -57,7 +48,7 @@ func recharge(cc pie.CreatedContext) interface{} {
 			return nil, err
 		}
 
-		cc.Logger().Infof("Recharge order %s to %s created", input.Amount, userId)
+		cc.Logger().Infof("Recharge log %s to %s created", input.Amount, userId)
 
 		return &RechargeOutput{
 			Id: rechargeLog.Id,
@@ -82,7 +73,7 @@ func rechargePaid(cc pie.CreatedContext) interface{} {
 
 		status := model.RechargeStatusCancelled
 		if recharged {
-			status = model.RechargeStatusPassed
+			status = model.RechargeStatusFinished
 		}
 
 		rechargeLog := model.RechargeLog{}
@@ -111,7 +102,7 @@ func rechargePaid(cc pie.CreatedContext) interface{} {
 			return err
 		}
 
-		cc.Logger().Infof("Recharge order %s to %s confirmed", rechargeLog.Amount, evt.New.UserId)
+		cc.Logger().Infof("Recharge log %s to %s confirmed", rechargeLog.Amount, evt.New.UserId)
 
 		return nil
 	}

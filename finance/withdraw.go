@@ -28,16 +28,16 @@ func withdraw(cc pie.CreatedContext) interface{} {
 		}
 		defer tx.Rollback()
 
-		setting := model.WithdrawConfig{}
-		if err := cc.LoadConfig(&setting); err != nil {
+		cfg := model.WithdrawConfig{}
+		if err := cc.LoadConfig(&cfg); err != nil {
 			return nil, err
 		}
 
-		if input.Amount.LessThan(setting.MinAmount) {
-			return nil, errors.Errorf("finance.withdraw.min-amount:%s", setting.MinAmount)
+		if input.Amount.LessThan(cfg.MinAmount) {
+			return nil, errors.Errorf("finance.withdraw.min-amount:%s", cfg.MinAmount)
 		}
-		if input.Amount.GreaterThan(setting.MaxAmount) {
-			return nil, errors.Errorf("finance.withdraw.max-amount:%s", setting.MaxAmount)
+		if input.Amount.GreaterThan(cfg.MaxAmount) {
+			return nil, errors.Errorf("finance.withdraw.max-amount:%s", cfg.MaxAmount)
 		}
 
 		userId := cc.GetSession(ctx).UserId
@@ -50,22 +50,22 @@ func withdraw(cc pie.CreatedContext) interface{} {
 		if user.Balance.LessThan(input.Amount) {
 			return nil, errors.New("finance.withdraw.not-enough-balance")
 		}
-		if user.Balance.LessThan(input.Amount.Add(setting.MinBalanceReserve)) {
-			return nil, errors.Errorf("finance.withdraw.min-balance:%s", setting.MinBalanceReserve)
+		if user.Balance.LessThan(input.Amount.Add(cfg.MinBalanceReserve)) {
+			return nil, errors.Errorf("finance.withdraw.min-balance:%s", cfg.MinBalanceReserve)
 		}
 
-		account := model.Account{}
+		account := model.WithdrawAccount{}
 		if err := tx.Model(&account).Where("id = ?", input.AccountId).Where("enabled = ?", true).Select(); err != nil {
 			return nil, err
 		}
 
 		withdrawLog := model.WithdrawLog{
-			UserId:  *userId,
-			Amount:  input.Amount,
-			Bank:    account.Bank,
-			Account: account.Identity,
-			Holder:  account.Holder,
-			Status:  model.WithdrawStatusPending,
+			UserId:   *userId,
+			Amount:   input.Amount,
+			Bank:     account.Bank,
+			Identity: account.Identity,
+			Holder:   account.Holder,
+			Status:   model.WithdrawStatusPending,
 		}
 		if _, err := tx.Model(&withdrawLog).Insert(); err != nil {
 			return nil, err
@@ -104,9 +104,9 @@ func auditWithdraw(cc pie.CreatedContext) interface{} {
 		userId := cc.GetSession(ctx).UserId
 		user := model.User{}
 		res, err := tx.Model(&user).
-			Set("balance_frozen = balance_frozen - ?", withdrawLog.Amount).
+			Set("frozen_balance = frozen_balance - ?", withdrawLog.Amount).
 			Where("id = ?", withdrawLog.UserId).
-			Where("balance_frozen >= ?", withdrawLog.Amount).
+			Where("frozen_balance >= ?", withdrawLog.Amount).
 			Update()
 		if err != nil {
 			return nil, err
@@ -162,7 +162,7 @@ func rejectWithdraw(cc pie.CreatedContext) interface{} {
 
 		user := model.User{}
 		res, err := tx.Model(&user).
-			Set("balance_frozen = balance_frozen + ?", withdrawLog.Amount).
+			Set("frozen_balance = frozen_balance + ?", withdrawLog.Amount).
 			Where("id = ?", withdrawLog.UserId).
 			Update()
 		if err != nil {

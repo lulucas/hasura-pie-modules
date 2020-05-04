@@ -20,15 +20,15 @@ type WithdrawLog struct {
 	Amount       decimal.Decimal `pg:",use_zero"`
 	Commission   decimal.Decimal `pg:",use_zero"`
 	Bank         string
-	Account      string
+	Identity     string
 	Holder       string
 	SubmitRemark *string
 	AuditorId    *uuid.UUID
 	AuditedAt    *time.Time
 	AuditRemark  *string
 	Status       WithdrawStatus
-	ClientIp     string
-	ClientRegion string
+	ClientIp     *string
+	ClientRegion *string
 }
 
 type WithdrawConfig struct {
