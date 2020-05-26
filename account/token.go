@@ -16,7 +16,7 @@ func refreshToken(cc pie.CreatedContext) interface{} {
 			return nil, ErrInvalidCredentials
 		}
 		// refresh token
-		token, err := pie.AuthJwt(userId.String(), session.Role)
+		token, err := pie.AuthJwt(userId.String(), session.Role, TokenDuration)
 		if err != nil {
 			return nil, err
 		}

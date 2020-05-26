@@ -19,7 +19,8 @@ type LoginInput struct {
 }
 
 type LoginOutput struct {
-	Token string
+	Token        string
+	RefreshToken string
 }
 
 func login(cc pie.CreatedContext, opt option) interface{} {
@@ -81,12 +82,17 @@ func login(cc pie.CreatedContext, opt option) interface{} {
 		cc.Logger().Infof("Identifier %s, method %s, login success", input.Identifier, input.Method)
 
 		// generate token
-		token, err := pie.AuthJwt(user.Id.String(), string(user.Role))
+		token, err := pie.AuthJwt(user.Id.String(), string(user.Role), TokenDuration)
+		if err != nil {
+			return nil, err
+		}
+		refreshToken, err := pie.AuthJwt(user.Id.String(), string(user.Role), RefreshTokenDuration)
 		if err != nil {
 			return nil, err
 		}
 		return &LoginOutput{
-			Token: token,
+			Token:        token,
+			RefreshToken: refreshToken,
 		}, nil
 	}
 }

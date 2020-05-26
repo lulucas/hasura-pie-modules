@@ -62,7 +62,7 @@ func updatePassword(cc pie.CreatedContext, opt option) interface{} {
 		cc.Logger().Infof("User id: %s, name: %s, change password success", user.Id, user.Name)
 
 		// generate token
-		token, err := pie.AuthJwt(user.Id.String(), string(user.Role))
+		token, err := pie.AuthJwt(user.Id.String(), string(user.Role), TokenDuration)
 		if err != nil {
 			return nil, err
 		}
@@ -121,7 +121,7 @@ func recoverPassword(cc pie.CreatedContext) interface{} {
 		cc.Logger().Infof("User id: %s, name: %s, recover password success", user.Id, user.Name)
 
 		// generate token
-		token, err := pie.AuthJwt(user.Id.String(), string(user.Role))
+		token, err := pie.AuthJwt(user.Id.String(), string(user.Role), TokenDuration)
 		if err != nil {
 			return nil, err
 		}

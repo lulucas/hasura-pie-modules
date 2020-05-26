@@ -21,7 +21,8 @@ type RegisterInput struct {
 }
 
 type RegisterOutput struct {
-	Token string
+	Token        string
+	RefreshToken string
 }
 
 func register(cc pie.CreatedContext, opt option) interface{} {
@@ -119,12 +120,17 @@ func register(cc pie.CreatedContext, opt option) interface{} {
 		}
 
 		// generate token
-		token, err := pie.AuthJwt(user.Id.String(), string(user.Role))
+		token, err := pie.AuthJwt(user.Id.String(), string(user.Role), TokenDuration)
+		if err != nil {
+			return nil, err
+		}
+		refreshToken, err := pie.AuthJwt(user.Id.String(), string(user.Role), RefreshTokenDuration)
 		if err != nil {
 			return nil, err
 		}
 		return &RegisterOutput{
-			Token: token,
+			Token:        token,
+			RefreshToken: refreshToken,
 		}, nil
 	}
 }

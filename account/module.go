@@ -4,6 +4,7 @@ import (
 	pie "github.com/lulucas/hasura-pie"
 	"github.com/lulucas/hasura-pie-modules/account/model"
 	"github.com/pkg/errors"
+	"time"
 )
 
 var (
@@ -15,6 +16,11 @@ var (
 	ErrInvalidCredentials     = errors.New("account.invalid-credentials")
 	ErrUserNotEnabled         = errors.New("account.user-not-enabled")
 	ErrCaptchaInvalid         = errors.New("account.captcha-invalid")
+)
+
+const (
+	TokenDuration        = 7 * 24 * time.Hour
+	RefreshTokenDuration = 7 * 24 * time.Hour
 )
 
 type account struct {
