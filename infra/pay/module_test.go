@@ -1,6 +1,8 @@
 package pay
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestNew(t *testing.T) {
 	New()

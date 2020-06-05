@@ -4,10 +4,8 @@ import (
 	"github.com/go-pg/pg/v9"
 	pie "github.com/lulucas/hasura-pie"
 	"github.com/lulucas/hasura-pie-modules/infra/pay/channel"
-	"github.com/lulucas/hasura-pie-modules/infra/pay/channel/alipay"
-	"github.com/lulucas/hasura-pie-modules/infra/pay/channel/bf"
-	"github.com/lulucas/hasura-pie-modules/infra/pay/channel/mks101"
 	"github.com/sarulabs/di"
+	"reflect"
 )
 
 type pay struct {
@@ -15,14 +13,14 @@ type pay struct {
 	channels map[string]channel.Channel
 }
 
-func New() *pay {
-	channels := map[string]channel.Channel{
-		"alipay": alipay.New(),
-		"bf":     bf.New(),
-		"mks101": mks101.New(),
+func New(channels ...channel.Channel) *pay {
+	chs := map[string]channel.Channel{}
+	for _, ch := range channels {
+		name := reflect.TypeOf(ch).Elem().Name()
+		chs[name] = ch
 	}
 	return &pay{
-		channels: channels,
+		channels: chs,
 	}
 }
 
