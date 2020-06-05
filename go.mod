@@ -18,7 +18,6 @@ require (
 	github.com/sarulabs/di v2.0.0+incompatible
 	github.com/satori/go.uuid v1.2.0
 	github.com/shopspring/decimal v0.0.0-20200227202807-02e2044944cc
-	github.com/smartwalle/alipay/v3 v3.1.0
 	github.com/vmihailenco/bufpool v0.1.11 // indirect
 	github.com/vmihailenco/msgpack/v4 v4.3.11 // indirect
 	github.com/xkeyideal/captcha v0.0.0-20171218103243-508b0d532b36
