@@ -3,6 +3,7 @@ package pay
 import (
 	"github.com/go-pg/pg/v9"
 	"github.com/lulucas/hasura-pie-modules/infra/pay/model"
+	"github.com/lulucas/hasura-pie-modules/infra/pay/utils"
 	"github.com/pkg/errors"
 	uuid "github.com/satori/go.uuid"
 	"github.com/shopspring/decimal"
@@ -38,5 +39,7 @@ func (m *pay) Pay(section string, channelId int32, orderId uuid.UUID, userId *uu
 		return "", "", ErrPayChannelNotFound
 	}
 
-	return ch.Pay(section, channelId, orderId, userId, amount, title, returnUrl, payChannel.NotifyUrl, clientIp, payChannel.Params)
+	notifyUrl := utils.JoinNotifyUrl(section, payChannel.NotifyUrl, channelId, userId)
+
+	return ch.Pay(section, channelId, orderId, userId, amount, title, returnUrl, notifyUrl, clientIp, payChannel.Params)
 }
