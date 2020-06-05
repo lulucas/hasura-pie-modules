@@ -15,7 +15,7 @@ var (
 )
 
 func (m *pay) Pay(section string, channelId int32, orderId uuid.UUID, userId *uuid.UUID, amount decimal.Decimal,
-	title, returnUrl, clientIp string) (method string, data string, err error) {
+	subject, body, returnUrl, clientIp string) (method string, data string, err error) {
 
 	payChannel := model.PayChannel{}
 	if err := m.db.Model(&payChannel).Where("id = ?", channelId).Select(); err != nil {
@@ -41,5 +41,5 @@ func (m *pay) Pay(section string, channelId int32, orderId uuid.UUID, userId *uu
 
 	notifyUrl := utils.JoinNotifyUrl(section, payChannel.NotifyUrl, channelId, userId)
 
-	return ch.Pay(section, channelId, orderId, userId, amount, title, returnUrl, notifyUrl, clientIp, payChannel.Params)
+	return ch.Pay(orderId, amount, subject, body, returnUrl, notifyUrl, clientIp, payChannel.Params)
 }
